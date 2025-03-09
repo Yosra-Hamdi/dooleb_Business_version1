@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'order_details.dart';
-import 'package:ec_app/EM_local_config.dart';
+import 'package:ec_app/SM_local_config.dart';
 
 
 class OrdersListPage extends StatefulWidget {

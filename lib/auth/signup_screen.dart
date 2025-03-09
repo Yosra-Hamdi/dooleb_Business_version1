@@ -1,8 +1,7 @@
-import 'package:ec_app/EM_local_config.dart';
-
+import 'package:ec_app/SM_local_config.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import '../graphql/signup_mutation.dart'; // Importez le fichier signup_mutation.dart
+import '../graphql/signup_mutation.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -32,7 +31,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         phoneController.text.isEmpty ||
         storeNameController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Veuillez remplir tous les champs'),
           backgroundColor: Colors.red,
         ),
@@ -63,7 +62,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         );
       } else {
-        print('Utilisateur créé: ${result.data}');
         Navigator.pushReplacementNamed(context, '/login');
       }
     } catch (e) {
@@ -79,56 +77,56 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-       
-        title: Text('Inscription', style: TextStyle(color: Colors.black)),
-        elevation: 0, // Supprime l'ombre de l'AppBar
+        title: const Text('Inscription', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 1,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView( // Pour éviter le débordement sur les petits écrans
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Créez votre compte',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _buildTextField(firstNameController, 'Prénom'),
               _buildTextField(lastNameController, 'Nom'),
               _buildTextField(emailController, 'Email'),
               _buildPasswordField(),
               _buildTextField(phoneController, 'Téléphone'),
               _buildTextField(storeNameController, 'Nom de la boutique'),
-              SizedBox(height: 20),
-              Center(
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
                 child: ElevatedButton(
                   onPressed: () => _signUp(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue, // Bleu pour le bouton
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12), // Bords arrondis
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    textStyle: TextStyle(fontSize: 18),
                   ),
-                  child: Text('S\'inscrire', style: TextStyle(color: Colors.white)),
+                  child: const Text(
+                    'S\'inscrire',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Center(
                 child: TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/login');
-                  },
-                  child: Text(
+                  onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+                  child: const Text(
                     'Vous avez déjà un compte ? Connectez-vous',
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -144,17 +142,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       padding: const EdgeInsets.only(bottom: 16.0),
       child: TextField(
         controller: controller,
-        style: TextStyle(color: Colors.black), // Texte noir pour tous les champs
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: TextStyle(color: Colors.black),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12), // Bords arrondis pour le champ
-            borderSide: BorderSide(color: Colors.blue),
-          ),
-          focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.blueAccent),
           ),
         ),
       ),
@@ -166,29 +157,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
       padding: const EdgeInsets.only(bottom: 16.0),
       child: TextField(
         controller: passwordController,
-        style: TextStyle(color: Colors.black),
         obscureText: _obscurePassword,
         decoration: InputDecoration(
           labelText: 'Mot de passe',
-          labelStyle: TextStyle(color: Colors.black),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.blue),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.blueAccent),
           ),
           suffixIcon: IconButton(
-            icon: Icon(
-              _obscurePassword ? Icons.visibility_off : Icons.visibility,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              setState(() {
-                _obscurePassword = !_obscurePassword;
-              });
-            },
+            icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
           ),
         ),
       ),

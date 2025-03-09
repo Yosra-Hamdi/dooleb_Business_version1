@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:ec_app/EM_local_config.dart';
+import 'package:ec_app/SM_local_config.dart';
 
 import 'package:ec_app/graphql/queries.dart';
 import 'package:http/http.dart' as http;

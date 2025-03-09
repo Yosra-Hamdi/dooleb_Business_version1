@@ -10,10 +10,10 @@ class Mutations {
 
   // Mutation pour réinitialiser le mot de passe
   static const String resetPassword = '''
-    mutation ResetPassword(\$email: String!, \$token: String!, \$newPassword: String!) {
-      resetPassword(email: \$email, token: \$token, newPassword: \$newPassword) {
-        success
-      }
+  mutation ResetPassword(\$email: String!, \$code: String!, \$newPassword: String!) {
+    resetPassword(email: \$email, code: \$code, newPassword: \$newPassword) {
+      success
     }
-  ''';
+  }
+''';
 }

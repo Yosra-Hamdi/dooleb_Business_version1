@@ -1,7 +1,7 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'EM_local_config.dart';
+import 'SM_local_config.dart';
 import 'auth/auth_provider.dart';
 import 'menu.dart';
 import 'auth/login_screen.dart';
@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
           '/signup': (context) => SignUpScreen(),
           '/menu': (context) => const MenuPage(),
           '/forgot-password': (context) => ForgotPasswordScreen(),
-          '/reset-password': (context) => ResetPasswordScreen(),
+          '/reset-password': (context) => ResetPasswordScreen(email: '', code: '',),
         },
       ),
     );

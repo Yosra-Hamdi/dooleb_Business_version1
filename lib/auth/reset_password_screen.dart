@@ -2,11 +2,13 @@ import 'package:ec_app/graphql/pasword_mutations.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
-
 class ResetPasswordScreen extends StatelessWidget {
+  final String email;
+  final String code;
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
-  final TextEditingController tokenController = TextEditingController();
+
+  ResetPasswordScreen({required this.email, required this.code});
 
   @override
   Widget build(BuildContext context) {
@@ -19,16 +21,6 @@ class ResetPasswordScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
-              controller: tokenController,
-              decoration: InputDecoration(
-                labelText: 'Token de réinitialisation',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
             TextField(
               controller: newPasswordController,
               obscureText: true,
@@ -53,7 +45,26 @@ class ResetPasswordScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Mutation(
               options: MutationOptions(
-                document: gql(Mutations.resetPassword), // Utilisez la mutation
+                document: gql(Mutations.resetPassword),
+                onCompleted: (dynamic resultData) {
+                  if (resultData != null && resultData['resetPassword']['success']) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Mot de passe réinitialisé avec succès'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                    Navigator.popUntil(context, (route) => route.isFirst); // Retour à l'écran de connexion
+                  }
+                },
+                onError: (error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Erreur : ${error.toString()}'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                },
               ),
               builder: (runMutation, result) {
                 return Column(
@@ -62,9 +73,8 @@ class ResetPasswordScreen extends StatelessWidget {
                       onPressed: () {
                         final newPassword = newPasswordController.text.trim();
                         final confirmPassword = confirmPasswordController.text.trim();
-                        final token = tokenController.text.trim();
 
-                        if (newPassword.isEmpty || confirmPassword.isEmpty || token.isEmpty) {
+                        if (newPassword.isEmpty || confirmPassword.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Veuillez remplir tous les champs'),
@@ -85,28 +95,16 @@ class ResetPasswordScreen extends StatelessWidget {
                         }
 
                         runMutation({
-                          'email': 'hamdiyosra010@gmail.com', // Remplacez par l'e-mail de l'utilisateur
-                          'token': token,
+                          'email': email,
+                          'code': code,
                           'newPassword': newPassword,
                         });
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 5, 19, 152),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
                       child: const Text('Réinitialiser le mot de passe'),
                     ),
                     const SizedBox(height: 20),
                     if (result != null && result.isLoading)
                       const CircularProgressIndicator(),
-                    if (result != null && result.hasException)
-                      Text('Erreur : ${result.exception.toString()}'),
-                    if (result != null && result.data != null)
-                      const Text('Mot de passe réinitialisé avec succès'),
                   ],
                 );
               },

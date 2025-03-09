@@ -1,6 +1,7 @@
 import 'package:ec_app/graphql/pasword_mutations.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'code_verification_screen.dart'; // Page pour saisir le code
 
 class ForgotPasswordScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -17,7 +18,7 @@ class ForgotPasswordScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Entrez votre adresse e-mail pour réinitialiser votre mot de passe',
+              'Entrez votre adresse email et nous vous enverrons un code pour réinitialiser votre mot de passe.',
               style: TextStyle(fontSize: 16),
               textAlign: TextAlign.center,
             ),
@@ -34,7 +35,26 @@ class ForgotPasswordScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Mutation(
               options: MutationOptions(
-                document: gql(Mutations.requestPasswordReset), // Utilisez la mutation
+                document: gql(Mutations.requestPasswordReset),
+                onCompleted: (dynamic resultData) {
+                  if (resultData != null && resultData['requestPasswordReset']['success']) {
+                    // Rediriger vers la page de saisie du code
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CodeVerificationScreen(email: emailController.text),
+                      ),
+                    );
+                  }
+                },
+                onError: (error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Erreur : ${error.toString()}'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                },
               ),
               builder: (runMutation, result) {
                 return Column(
@@ -42,7 +62,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () {
                         final email = emailController.text.trim();
-                        if (email.isEmpty) {
+                        if (email.isEmpty || !email.contains('@')) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Veuillez entrer votre adresse e-mail'),
@@ -54,23 +74,11 @@ class ForgotPasswordScreen extends StatelessWidget {
 
                         runMutation({'email': email});
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 5, 19, 152),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: const Text('Envoyer le lien de réinitialisation'),
+                      child: const Text('Envoyer le code'),
                     ),
                     const SizedBox(height: 20),
                     if (result != null && result.isLoading)
                       const CircularProgressIndicator(),
-                    if (result != null && result.hasException)
-                      Text('Erreur : ${result.exception.toString()}'),
-                    if (result != null && result.data != null)
-                      const Text('Un e-mail de réinitialisation a été envoyé'),
                   ],
                 );
               },
